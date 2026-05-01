@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker</title>
+    <style>
+        :root { --bg: #f0f2f5; --text: #1c1e21; --primary: #1877f2; --danger: #e41e3f; --success: #42b72a; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; width: 100%; max-width: 450px; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-bottom: 20px; }
+        .balance-card { background: var(--primary); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .stats { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .stat-box { flex: 1; text-align: center; padding: 10px; }
+        .stat-income { color: var(--success); font-weight: bold; }
+        .stat-expense { color: var(--danger); font-weight: bold; }
+        .form-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        input, select, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { opacity: 0.9; }
+        .history { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Moliya Nazorati</h2>
+    
+    <div class="balance-card">
+        <small>Umumiy Balans</small>
+        <h1 id="totalBalance">0 so'm</h1>
+    </div>
+
+    <div class="stats">
+        <div class="stat-box">
+            <span>Daromad</span>
+            <div class="stat-income" id="totalIncome">+0</div>
+        </div>
+        <div class="stat-box">
+            <span>Xarajat</span>
+            <div class="stat-expense" id="totalExpense">-0</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <input type="text" id="desc" placeholder="Nima uchun? (masalan: Oylik, Markaziy bozor)">
+        <input type="number" id="amount" placeholder="Summa (masalan: 50000)">
+        <select id="type">
+            <option value="income">Daromad</option>
+            <option value="expense">Xarajat</option>
+        </select>
+        <button onclick="addTransaction()">Qo'shish</button>
+    </div>
+
+    <ul class="history" id="history"></ul>
+</div>
+
+<script>
+    let transactions = [];
+
+    function addTransaction() {
+        const desc = document.getElementById('desc').value;
+        const amount = parseFloat(document.getElementById('amount').value);
+        const type = document.getElementById('type').value;
+
+        if (!desc || isNaN(amount)) return;
+
+        const transaction = { desc, amount, type };
+        transactions.push(transaction);
+        updateUI();
+
+        document.getElementById('desc').value = '';
+        document.getElementById('amount').value = '';
+    }
+
+    function updateUI() {
+        const list = document.getElementById('history');
+        const totalB = document.getElementById('totalBalance');
+        const totalI = document.getElementById('totalIncome');
+        const totalE = document.getElementById('totalExpense');
+
+        list.innerHTML = '';
+        let income = 0;
+        let expense = 0;
+
+        transactions.forEach(t => {
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.innerHTML = `<span>${t.desc}</span> <span style="color: ${t.type === 'income' ? 'green' : 'red'}">${t.type === 'income' ? '+' : '-'}${t.amount}</span>`;
+            list.prepend(li);
+
+            if (t.type === 'income') income += t.amount;
+            else expense += t.amount;
+        });
+
+        totalI.innerText = `+${income} so'm`;
+        totalE.innerText = `-${expense} so'm`;
+        totalB.innerText = `${income - expense} so'm`;
+    }
+</script>
+
+</body>
+</html>
